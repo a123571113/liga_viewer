@@ -101,6 +101,36 @@ def create_flow_plot(result_df_: pd.DataFrame):
     return fig
 
 
+def highlight_medals(val):
+    if val == 1:
+        color = 'rgba(255, 215, 0, 0.7)'  # Gold with transparency
+    elif val == 2:
+        color = 'rgba(192, 192, 192, 0.7)'  # Silver with transparency
+    elif val == 3:
+        color = 'rgba(205, 127, 50, 0.7)'  # Bronze with transparency
+    else:
+        color = ''
+    return f'background-color: {color}'
+
+
+def highlight_medals(val):
+    if val == 1:
+        color = 'rgba(255, 215, 0, 0.8)'  # Gold with transparency
+    elif val == 2:
+        color = 'rgba(192, 192, 192, 0.8)'  # Silver with transparency
+    elif val == 3:
+        color = 'rgba(205, 127, 50, 0.8)'  # Bronze with transparency
+    else:
+        color = ''
+    return f'background-color: {color}'
+
+
+def grey_last_rows(df):
+    df_copy = pd.DataFrame('', index=df.index, columns=df.columns)
+    df_copy.iloc[-4:, :] = 'background-color: rgba(224, 224, 224, 0.5)'
+    return df_copy
+
+
 def compute_overall():
     overall_results = pd.DataFrame({'Teams': TEAMS})
 
@@ -117,7 +147,18 @@ def compute_overall():
         overall_results.drop(columns=['Rank'], inplace=True)
     except KeyError:
         pass
+    
     overall_results.insert(0, 'Rank', range(1, overall_results.shape[0] + 1))
+
+    overall_results = overall_results.style.applymap(
+        highlight_medals,
+        subset=sum_columns
+    )
+
+    overall_results = overall_results.apply(
+        grey_last_rows, axis=None
+    )
+
 
     st.dataframe(
         overall_results,
@@ -180,6 +221,8 @@ def display_event(title: str, data_event: str) -> None:
                data_to_show[column] = data_to_show[column].str.replace("0", "")  
         except:
             pass
+
+    data_to_show.insert(0, 'Rank', range(1, data_to_show.shape[0] + 1))
 
     if DISPLAY_COLORCODING:
         st.dataframe(

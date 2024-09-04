@@ -10,10 +10,11 @@ st.set_page_config(layout="wide")
 initialize_states()
 col1, col2 = st.columns([9, 1], vertical_alignment="center")
 
-# col1.image("./data/logo_segelbundesliga.png")
-col2.image("./data/logo_myc.png")
+with col1:
+    st.title("SEGEL-BUNDESLIGA 2024")
 
-st.title("SEGEL-BUNDESLIGA 2024")
+with col2:
+    st.image("./data/logo_myc.png")
 
 tab_event1, tab_event2, tab_event3, \
 tab_event4, tab_event5, tab_event6, tab_overall = st.tabs(

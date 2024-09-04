@@ -370,7 +370,7 @@ def check_for_rdg(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def sort_results(result_df):
+def sort_results(result_df, prints=False):
     result_df_copy = result_df.copy()
 
     result_df_copy.replace(BUCHSTABEN, inplace=True)
@@ -399,8 +399,10 @@ def sort_results(result_df):
     index = result_df_copy.index
     result_df = result_df.reindex(index)
     result_df['Total'] = result_df_copy['Total']
-
-    print("[INFO] Results computed.")
+    
+    if prints:
+        print("[INFO] Results computed.")
+        
     return result_df
 
 
