@@ -4,11 +4,20 @@ from pymongo import MongoClient
 
 from config import *
 
-uri = f"mongodb+srv://{st.secrets['database']['user']}:{st.secrets['database']['password']}@cluster0.3rpqm.mongodb.net/dsbl?retryWrites=true&w=majority"
-client = MongoClient(uri)
-db = client["dsbl"]
 
+@st.cache_resource
+def init_connection():
+    uri = f"mongodb+srv://{st.secrets['database']['user']}:{st.secrets['database']['password']}@cluster0.3rpqm.mongodb.net/dsbl?retryWrites=true&w=majority"
+    client = MongoClient(uri)
+    
+    return client
+
+
+@st.cache_data(ttl=REFRESH_TIME)
 def load_data_mongo(event: str) -> pd.DataFrame:
+    client = init_connection()
+
+    db = client["dsbl"]
 
     collection = db[event] 
 
@@ -28,6 +37,7 @@ def load_data_mongo(event: str) -> pd.DataFrame:
 def load_data_parquet(event: str) -> pd.DataFrame:
     df = pd.read_parquet(path=f"./data/{event}.parquet")
     return df
+
 
 def get_data_google(link_id: str, stupid_formatting: int = -1) -> pd.DataFrame:
 
