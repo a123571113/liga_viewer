@@ -36,7 +36,7 @@ with tab_event2:
 
 with tab_event3:
     display_event(
-        title="Event 03 Kiel",
+        title="Event 03 Kiel - KYC",
         data_event="data_event_03"
     )
 
@@ -44,6 +44,18 @@ with tab_event4:
     display_event(
         title="Event 04 Kiel",
         data_event="data_event_04"
+    )
+
+with tab_event5:
+    display_event(
+        title="Event 05 Starnberg - MYC",
+        data_event="data_event_05"
+    )
+
+with tab_event6:
+    display_event(
+        title="Event 06 Starnberg - BYC",
+        data_event="data_event_06"
     )
 
 with tab_overall:

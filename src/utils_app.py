@@ -40,6 +40,18 @@ def initialize_states() -> None:
         st.session_state["data_event_04"] = sort_results(result_df=df)
     except Exception as e:
         print(e)
+    
+    try:
+        df = get_data(event="event_05")
+        st.session_state["data_event_05"] = sort_results(result_df=df)
+    except Exception as e:
+        print(e)
+
+    try:
+        df = get_data(event="event_06")
+        st.session_state["data_event_06"] = sort_results(result_df=df)
+    except Exception as e:
+        print(e)
 
 
 def calculate_place_flow(result_df: pd.DataFrame) -> pd.DataFrame:
@@ -210,6 +222,9 @@ def display_event(title: str, data_event: str) -> None:
     st.write("### Ergebnisse " + title)
 
     data = st.session_state[data_event].astype(str)
+
+    print(data)
+    
     data = data.replace("nan","0")
 
     # Replace 0 with "" in columns that only contain 0

@@ -29,7 +29,8 @@ def load_data_mongo(event: str) -> pd.DataFrame:
 
     df.drop(["_id"], axis=1, inplace=True)
 
-    print("[INFO] Data loaded from MongoDB.")
+    print(f"[INFO] Data for {event} loaded from MongoDB.")
+    print(df)
 
     return df
 
