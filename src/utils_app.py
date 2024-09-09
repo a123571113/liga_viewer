@@ -148,9 +148,15 @@ def compute_overall():
 
     for event in range(1, EVENTS+1):
         result_df = st.session_state["data_event_0" + str(event)]
-        result_df.insert(0, 'Rank', range(1, result_df.shape[0] + 1))
-        result_df.sort_values(by='Teams', inplace=True)
-        overall_results['Event {}'.format(event)] = result_df['Rank'].values
+
+        if result_df["Total"].sum() == 0:
+            overall_results['Event {}'.format(event)] = 0
+        
+        else:
+
+            result_df.insert(0, 'Rank', range(1, result_df.shape[0] + 1))
+            result_df.sort_values(by='Teams', inplace=True)
+            overall_results['Event {}'.format(event)] = result_df['Rank'].values
     
     sum_columns = ['Event {}'.format(event) for event in range(1, EVENTS + 1)]
     overall_results['Total'] = overall_results[sum_columns].sum(axis=1)
@@ -224,7 +230,7 @@ def display_event(title: str, data_event: str) -> None:
     data = st.session_state[data_event].astype(str)
 
     print(data)
-    
+
     data = data.replace("nan","0")
 
     # Replace 0 with "" in columns that only contain 0

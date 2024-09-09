@@ -2,7 +2,7 @@ import numpy as np
 
 BOATS = 6
 FLIGHTS = 16
-EVENTS = 4
+EVENTS = 6
 TEAMS = ['ASVW', 'BYC (BA)', 'BYC (BE)', 'BYCÜ', 'DYC', 'FSC', 'JSC', 'KYC (BW)', 'KYC (SH)', 'MSC', 'MYC', 'NRV', 'RSN',
          'SMCÜ', 'SV03', 'SVI', 'VSaW', 'WYC']
 
