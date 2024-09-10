@@ -144,7 +144,7 @@ def compute_overall():
     for event in range(1, EVENTS+1):
         result_df = st.session_state["data_event_0" + str(event)]
 
-        if result_df["Total"].sum() == 0:
+        if result_df["Total"].min() == 0:
             overall_results['Event {}'.format(event)] = 0
         
         else:
@@ -171,7 +171,6 @@ def compute_overall():
     overall_results = overall_results.apply(
         grey_last_rows, axis=None
     )
-
 
     st.write("### Saison 2024 Ergebnis")
     st.dataframe(
@@ -205,8 +204,7 @@ def add_pairinglist_font(df: pd.DataFrame, event: int) -> pd.DataFrame:
 
         flight = 1
 
-        print(df)
-        df.replace("", "__", inplace=True)
+        df.replace("", "___", inplace=True)
         style_df = df.style
 
         colors = ["red", "blue", "lightgreen"]
@@ -239,6 +237,8 @@ def display_event(title: str, data_event: str) -> None:
 
     # Replace 0 with "" in columns that only contain 0
     data_to_show = data.copy()
+
+    # data_to_show["SCP"] = data_to_show["SCP"].astype(float).astype(int).astype(str)
     
     for column in race_columns:
         try:

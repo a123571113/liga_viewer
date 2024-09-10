@@ -83,7 +83,7 @@ def get_data_google(link_id: str, stupid_formatting: int = -1) -> pd.DataFrame:
         )
         df.drop(["1.", "Overall"], axis=1, inplace=True)
     
-    print(df)
+    # print(df)
     columns = ["Teams", "SCP"]
     columns.extend([f'Flight {i}' for i in range(1, FLIGHTS + 1)])
 
