@@ -49,7 +49,7 @@ hide_streamlit_style = """
                 }
                 </style>
                 <div class="custom-footer">
-                Developed with ❤️ by Hans
+                Developed with ❤️ by Hans & Hans
                 </div>
                 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
