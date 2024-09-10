@@ -34,12 +34,11 @@ def load_data_mongo(event: str) -> pd.DataFrame:
     return df
 
 
-@st.cache_data(ttl=REFRESH_TIME)
 def get_data_current_event(event: str) -> pd.DataFrame:
     return load_data_mongo(event=event)
 
 
-@st.cache_resource
+@st.cache_data
 def get_data_steady_event(event: str) -> pd.DataFrame:
     return load_data_mongo(event=event)
 

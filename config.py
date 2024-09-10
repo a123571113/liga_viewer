@@ -17,4 +17,4 @@ max_race_columns = 16
 race_columns = ['Flight {}'.format(i) for i in range(1,max_race_columns+1)]
 
 DISPLAY_COLORCODING = True
-REFRESH_TIME = 10 # in seconds 
+REFRESH_TIME = 60 # in seconds 
