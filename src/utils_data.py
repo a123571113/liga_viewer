@@ -13,7 +13,6 @@ def init_connection():
     return client
 
 
-@st.cache_data(ttl=REFRESH_TIME)
 def load_data_mongo(event: str) -> pd.DataFrame:
     client = init_connection()
 
@@ -30,9 +29,19 @@ def load_data_mongo(event: str) -> pd.DataFrame:
     df.drop(["_id"], axis=1, inplace=True)
 
     print(f"[INFO] Data for {event} loaded from MongoDB.")
-    print(df)
+    # print(df)
 
     return df
+
+
+@st.cache_data(ttl=REFRESH_TIME)
+def get_data_current_event(event: str) -> pd.DataFrame:
+    return load_data_mongo(event=event)
+
+
+@st.cache_resource
+def get_data_steady_event(event: str) -> pd.DataFrame:
+    return load_data_mongo(event=event)
 
 
 def load_data_parquet(event: str) -> pd.DataFrame:

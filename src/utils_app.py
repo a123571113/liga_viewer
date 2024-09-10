@@ -4,51 +4,46 @@ import streamlit as st
 import plotly.graph_objects as go
 
 from src.utils_sorting import sort_results, create_pairing_list
-from src.utils_data import load_data_mongo
+from src.utils_data import get_data_current_event, get_data_steady_event 
 
 # Load confing
 from config import *
 
 
-@st.cache_data(ttl=REFRESH_TIME)
-def get_data(event: str) -> pd.DataFrame:
-    return load_data_mongo(event=event)
-
-
 def initialize_states() -> None:
    
     try:
-        df = get_data(event="event_01")
+        df = get_data_steady_event(event="event_01")
         st.session_state["data_event_01"] = sort_results(result_df=df)
     except Exception as e:
         print(e)
 
     try:
-        df = get_data(event="event_02")
+        df = get_data_steady_event(event="event_02")
         st.session_state["data_event_02"] = sort_results(result_df=df)
     except Exception as e:
         print(e)
 
     try:
-        df = get_data(event="event_03")
+        df = get_data_steady_event(event="event_03")
         st.session_state["data_event_03"] = sort_results(result_df=df)
     except Exception as e:
         print(e)
 
     try:
-        df = get_data(event="event_04")
+        df = get_data_steady_event(event="event_04")
         st.session_state["data_event_04"] = sort_results(result_df=df)
     except Exception as e:
         print(e)
     
     try:
-        df = get_data(event="event_05")
+        df = get_data_current_event(event="event_05")
         st.session_state["data_event_05"] = sort_results(result_df=df)
     except Exception as e:
         print(e)
 
     try:
-        df = get_data(event="event_06")
+        df = get_data_steady_event(event="event_06")
         st.session_state["data_event_06"] = sort_results(result_df=df)
     except Exception as e:
         print(e)
@@ -168,7 +163,7 @@ def compute_overall():
     
     overall_results.insert(0, 'Rank', range(1, overall_results.shape[0] + 1))
 
-    overall_results = overall_results.style.applymap(
+    overall_results = overall_results.style.map(
         highlight_medals,
         subset=sum_columns
     )
@@ -178,7 +173,7 @@ def compute_overall():
     )
 
 
-    st.write("### Live Ranking Overall")
+    st.write("### Saison 2024 Ergebnis")
     st.dataframe(
         overall_results,
         height=665,
@@ -188,41 +183,46 @@ def compute_overall():
 
 
 def highlight_fleet(_, team_in_fleet: list[bool], color: str):
-    return ['color:'+color + '; font-weight:bold' if team else '' for team in team_in_fleet]
+    return ["color:" + color if team else "" for team in team_in_fleet]
+    # return ["background-color:" + color if team else "" for team in team_in_fleet]
 
 
 def add_pairinglist_font(df: pd.DataFrame, event: int) -> pd.DataFrame:
-
-    pairing_list, _ = create_pairing_list(event=event)
-    pairing_list = pairing_list.drop(["flight", "Race"], axis=1)
-
-    pairing_list = pairing_list.replace("BYC(BA)", "BYC (BA)")
-    pairing_list = pairing_list.replace("BYC(BE)", "BYC (BE)")
-
-    pairing_list = pairing_list.replace("KYC(SH)", "KYC (SH)")
-    pairing_list = pairing_list.replace("KYC(BW)", "KYC (BW)")
+    if event == 6:
+        return df
     
-    teams = df["Teams"].values
+    else:
+        pairing_list, _ = create_pairing_list(event=event - 1)
+        pairing_list = pairing_list.drop(["flight", "Race"], axis=1)
 
-    flight = 1
-    style_df = df.style
+        pairing_list = pairing_list.replace("BYC(BA)", "BYC (BA)")
+        pairing_list = pairing_list.replace("BYC(BE)", "BYC (BE)")
 
-    colors = ["red", "blue", "green"]
-    # colors = ["#FFCCCB", "#ADD8E6", "#90EE90"]
-
-    for i in range(pairing_list.shape[0]):
-        team_in_fleet = np.isin(teams, pairing_list.iloc[i, :].values)
+        pairing_list = pairing_list.replace("KYC(SH)", "KYC (SH)")
+        pairing_list = pairing_list.replace("KYC(BW)", "KYC (BW)")
         
-        column_name = 'Flight ' + str(flight)
-        
-        color = colors[i % len(colors)]
-        
-        style_df = style_df.apply(highlight_fleet, subset=[column_name], team_in_fleet=team_in_fleet, color=color)
+        teams = df["Teams"].values
 
-        if (i + 1) % 3 == 0:
-            flight += 1
-    
-    return style_df
+        flight = 1
+        style_df = df.style
+
+        colors = ["red", "blue", "green"]
+        # colors = ["#dca0b6", "#ADD8E6", "#90EE90"]
+
+        for i in range(pairing_list.shape[0]):
+            team_in_fleet = np.isin(teams, pairing_list.iloc[i, :].values)
+            
+            column_name = 'Flight ' + str(flight)
+            
+            color = colors[i % len(colors)]
+            
+            style_df = style_df.apply(highlight_fleet, subset=[column_name], team_in_fleet=team_in_fleet, color=color)#.map(lambda x: 'font-weight: bold')
+                               #.set_properties(**{"font-weight": "bold"})
+
+            if (i + 1) % 3 == 0:
+                flight += 1
+        
+        return style_df
 
 
 def display_event(title: str, data_event: str) -> None:
@@ -230,7 +230,7 @@ def display_event(title: str, data_event: str) -> None:
 
     data = st.session_state[data_event].astype(str)
 
-    print(data)
+    # print(data)
 
     data = data.replace("nan","0")
 

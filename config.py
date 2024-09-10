@@ -10,12 +10,11 @@ BUCHSTABEN = {'OCS': BOATS + 1,
               'DSQ': BOATS + 1,
               'DNF': BOATS + 1,
               'DNC': BOATS + 1,
-              'No result': np.nan, 
-              'OSC': BOATS + 1, # Well
+              'No result': np.nan,
               }
 
 max_race_columns = 16
 race_columns = ['Flight {}'.format(i) for i in range(1,max_race_columns+1)]
 
-DISPLAY_COLORCODING = False
-REFRESH_TIME = 60 # in seconds 
+DISPLAY_COLORCODING = True
+REFRESH_TIME = 10 # in seconds 
