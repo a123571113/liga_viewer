@@ -204,9 +204,12 @@ def add_pairinglist_font(df: pd.DataFrame, event: int) -> pd.DataFrame:
         teams = df["Teams"].values
 
         flight = 1
+
+        print(df)
+        df.replace("", "__", inplace=True)
         style_df = df.style
 
-        colors = ["red", "blue", "green"]
+        colors = ["red", "blue", "lightgreen"]
         # colors = ["#dca0b6", "#ADD8E6", "#90EE90"]
 
         for i in range(pairing_list.shape[0]):
