@@ -5,7 +5,7 @@ FLIGHTS = 16
 race_columns = ['Flight {}'.format(i) for i in range(1,FLIGHTS+1)]
 
 DISPLAY_COLORCODING = True
-REFRESH_TIME = 60 # in seconds 
+REFRESH_TIME = 120 # in seconds 
 
 TEAMS_L1 = [
     'ASVW', 'BYC (BA)', 'BYC (BE)', 'BYCÜ', 'DYC',

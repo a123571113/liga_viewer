@@ -103,6 +103,6 @@ with tab_L2_event5:
 with tab_overall:
     display_overall()
 
-# print("[INFO] Rerun")
-# time.sleep(REFRESH_TIME)
-# st.rerun()
+print("[INFO] Rerun")
+time.sleep(REFRESH_TIME)
+st.rerun()
