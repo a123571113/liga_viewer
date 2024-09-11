@@ -218,14 +218,27 @@ def compute_overall():
     overall_results = overall_results.apply(
         grey_last_rows, axis=None
     )
+    
+    st.write("### Saison 2024 Ergebnis") 
+    col_0, col_1 = st.columns([1,1])
 
-    st.write("### Saison 2024 Ergebnis")
-    st.dataframe(
-        overall_results,
-        height=665,
-        use_container_width=True,
-        hide_index=True,
-    )
+    with col_0:
+        st.write("### 1. Liga") 
+        st.dataframe(
+            overall_results,
+            height=665,
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    with col_1:
+        st.write("### 2. Liga") 
+        st.dataframe(
+            overall_results,
+            height=665,
+            use_container_width=True,
+            hide_index=True,
+        )
 
 
 def highlight_fleet(_, team_in_fleet: list[bool], color: str):
