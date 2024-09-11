@@ -59,7 +59,7 @@ initialize_states()
 col1, col2 = st.columns([9, 1], vertical_alignment="center")
 
 with col1:
-    st.title("SEGEL-BUNDESLIGA 2024")
+    st.title("SEGEL-BUNDESLIGA 2024 (INOFFIZIELL)")
 
 with col2:
     st.image("./data/logo_myc.png")
