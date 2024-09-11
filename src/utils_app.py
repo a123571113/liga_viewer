@@ -231,12 +231,12 @@ def display_event(title: str, data_event: str, liga: int) -> None:
             hide_index=True
         )
 
-    df_ = calculate_place_flow(result_df=data, liga=liga)
+    # df_ = calculate_place_flow(result_df=data, liga=liga)
 
-    plot_flow = create_flow_plot(df_)
+    # plot_flow = create_flow_plot(df_)
 
-    st.write("### Flow")
-    st.plotly_chart(plot_flow)
+    # st.write("### Flow")
+    # st.plotly_chart(plot_flow)
 
 
 def highlight_medals(val):
