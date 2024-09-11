@@ -6,17 +6,31 @@ from config import *
 
 
 @st.cache_resource
-def init_connection():
+def init_connection_liga_1():
     uri = f"mongodb+srv://{st.secrets['database']['user']}:{st.secrets['database']['password']}@cluster0.3rpqm.mongodb.net/dsbl?retryWrites=true&w=majority"
     client = MongoClient(uri)
-    
+    return client
+
+@st.cache_resource
+def init_connection_liga_2():
+    uri = f"mongodb+srv://{st.secrets['database']['user']}:{st.secrets['database']['password']}@cluster0.3rpqm.mongodb.net/dsbl2?retryWrites=true&w=majority"
+    client = MongoClient(uri)
     return client
 
 
-def load_data_mongo(event: str) -> pd.DataFrame:
-    client = init_connection()
+def load_data_mongo(event: str, database:str) -> pd.DataFrame:
 
-    db = client["dsbl"]
+    if database=="dsbl":
+        client = init_connection_liga_1()
+
+    elif database == "dsbl2":
+        client = init_connection_liga_2()        
+
+    else:
+        print("[ERROR] Database does not exist")
+        exit()
+
+    db = client[database]
 
     collection = db[event] 
 
@@ -28,65 +42,15 @@ def load_data_mongo(event: str) -> pd.DataFrame:
 
     df.drop(["_id"], axis=1, inplace=True)
 
-    print(f"[INFO] Data for {event} loaded from MongoDB.")
-    # print(df)
+    print(f"[INFO] Data from {database} - {event} loaded.")
 
     return df
 
 
-def get_data_current_event(event: str) -> pd.DataFrame:
-    return load_data_mongo(event=event)
+def get_data_current_event(event: str, database: str) -> pd.DataFrame:
+    return load_data_mongo(event=event, database=database)
 
 
 @st.cache_data
-def get_data_steady_event(event: str) -> pd.DataFrame:
-    return load_data_mongo(event=event)
-
-
-def load_data_parquet(event: str) -> pd.DataFrame:
-    df = pd.read_parquet(path=f"./data/{event}.parquet")
-    return df
-
-
-def get_data_google(link_id: str, stupid_formatting: int = -1) -> pd.DataFrame:
-
-    if stupid_formatting == 0:
-        df = pd.read_csv(
-            'https://docs.google.com/spreadsheets/d/' +
-            link_id  +
-            '/export?gid=0&format=csv',
-            skiprows=2,
-        )
-        df.drop(["Unnamed: 0", "Overall"], axis=1, inplace=True)
-
-    elif stupid_formatting == 1:
-
-        df = pd.read_csv(
-            'https://docs.google.com/spreadsheets/d/' +
-            link_id  +
-            '/export?gid=0&format=csv',
-            skiprows=1,
-        )
-        df.drop(['Unnamed: 0', "Overall"], axis=1, inplace=True)
-        
-        df[14] = np.nan
-        df[15] = np.nan
-        df[16] = np.nan
-        
-    else:
-        df = pd.read_csv(
-            'https://docs.google.com/spreadsheets/d/' +
-            link_id  +
-            '/export?gid=0&format=csv',
-            skiprows=1,
-        )
-        df.drop(["1.", "Overall"], axis=1, inplace=True)
-    
-    # print(df)
-    columns = ["Teams", "SCP"]
-    columns.extend([f'Flight {i}' for i in range(1, FLIGHTS + 1)])
-
-    df.columns = columns
-
-    print("[INFO] Data loaded from Google Docs.")
-    return df
+def get_data_steady_event(event: str, database: str) -> pd.DataFrame:
+    return load_data_mongo(event=event, database=database)

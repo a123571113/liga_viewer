@@ -1,22 +1,25 @@
 import numpy as np
 import pandas as pd
 
-from data.data_pairing_list import data as DATA_PAIRING_LIST
-from data.data_pairing_list import TEAMS as TEAMS
-
-from data.data_pairing_list2 import data as DATA_PAIRING_LIST2
-from data.data_pairing_list2 import TEAMS as TEAMS2
+from data.data_pairing_list import data as DATA_PAIRING_LIST_L1
+from data.data_pairing_list2 import data as DATA_PAIRING_LIST_L2
 
 from config import *
 
 
-def create_pairing_list(event):
+def create_pairing_list(event:int, liga: int):
     '''
     Temporary function to create (hard-coded) pairing list
     :return: Pairing list as a pandas DataFrame
     '''
-    data = DATA_PAIRING_LIST
+    if liga == 1:
+        data = DATA_PAIRING_LIST_L1
+        teams = TEAMS_L1
 
+    elif liga == 2:
+        data = DATA_PAIRING_LIST_L2
+        teams = TEAMS_L2
+    
     # Parse the data
     lines = data[event].strip().split('\n')
     parsed_data = []
@@ -26,7 +29,7 @@ def create_pairing_list(event):
         race = split_line[0].strip()
         boats = split_line[1:]
         temp_list = [int(race)]
-        for boat_number, team in enumerate(boats, start=1):
+        for _, team in enumerate(boats, start=1):
             temp_list.append(team)
         parsed_data.append(temp_list)
 
@@ -35,20 +38,18 @@ def create_pairing_list(event):
     df = pd.DataFrame(parsed_data, columns=columns)
     df['flight'] = [number for number in range(1, 17) for _ in range(3)]
 
-    results_dict = {'Teams': TEAMS, 'SCP': [0] * len(TEAMS)}
+    results_dict = {'Teams': teams, 'SCP': [0] * len(teams)}
     for flight in range(1, FLIGHTS + 1):
-        results_dict[f'Flight {flight}'] = [np.nan] * len(TEAMS)
-    results_dict['Total'] = [0] * len(TEAMS)
+        results_dict[f'Flight {flight}'] = [np.nan] * len(teams)
+    results_dict['Total'] = [0] * len(teams)
     results = pd.DataFrame(results_dict)
 
     return df, results
 
 
-def count_values(row):
-    # You can adjust this list based on the values you're interested in
+def count_values(row, flights):
     values_of_interest = [i for i in range(1, 6 + 2)]
-    # TODO look only in Race{}.format() columns
-    counts = {value: (row == value).sum() for value in values_of_interest}
+    counts = {value: (row[[f'Flight {i}' for i in range(1,flights+1)]] == value).sum() for value in values_of_interest}
     return pd.Series(counts)
 
 
@@ -80,7 +81,9 @@ def sort_results(result_df, prints=False):
     result_df_copy[columns_to_sum] = result_df_copy[columns_to_sum].astype('float64')
 
     result_df_copy['Total'] = result_df_copy[columns_to_sum].sum(axis=1)
-    counts_df = result_df_copy.apply(count_values, axis=1)
+
+    counts_df = result_df_copy.apply(count_values, axis=1, flights=FLIGHTS)
+
     result_df_copy = pd.concat([result_df_copy, counts_df], axis=1, )
 
     sort_column_list = ['Total']
@@ -104,7 +107,7 @@ def sort_results(result_df, prints=False):
 
 
 def get_flight(race):
-    return int(np.ceil(race / (len(TEAMS) / BOATS)))
+    return int(np.ceil(race / (18 / BOATS)))
 
 
 def add_results(result_df):

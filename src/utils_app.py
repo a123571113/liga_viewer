@@ -6,12 +6,6 @@ import plotly.graph_objects as go
 from src.utils_sorting import sort_results, create_pairing_list
 from src.utils_data import get_data_current_event, get_data_steady_event
 
-from data.data_pairing_list import data as DATA_PAIRING_LIST
-from data.data_pairing_list import TEAMS as TEAMS
-
-from data.data_pairing_list2 import data as DATA_PAIRING_LIST2
-from data.data_pairing_list2 import TEAMS as TEAMS2
-
 # Load confing
 from config import *
 
@@ -65,44 +59,38 @@ def setup_page() -> None:
 
 def initialize_states() -> None:
    
-    try:
-        df = get_data_steady_event(event="event_01")
-        st.session_state["data_event_01"] = sort_results(result_df=df)
-    except Exception as e:
-        print(e)
+    for event, func_name in EVENTS_L1:
+        try:
+            # Dynamically call the appropriate function
+            if func_name == "get_data_steady_event":
+                df = get_data_steady_event(event=event, database="dsbl")
+            else:
+                df = get_data_current_event(event=event, database="dsbl")
+            
+            st.session_state[f"data_L1_{event}"] = sort_results(result_df=df)
+        except Exception as e:
+            print(e)
 
-    try:
-        df = get_data_steady_event(event="event_02")
-        st.session_state["data_event_02"] = sort_results(result_df=df)
-    except Exception as e:
-        print(e)
-
-    try:
-        df = get_data_steady_event(event="event_03")
-        st.session_state["data_event_03"] = sort_results(result_df=df)
-    except Exception as e:
-        print(e)
-
-    try:
-        df = get_data_steady_event(event="event_04")
-        st.session_state["data_event_04"] = sort_results(result_df=df)
-    except Exception as e:
-        print(e)
-    
-    try:
-        df = get_data_current_event(event="event_05")
-        st.session_state["data_event_05"] = sort_results(result_df=df)
-    except Exception as e:
-        print(e)
-
-    try:
-        df = get_data_steady_event(event="event_06")
-        st.session_state["data_event_06"] = sort_results(result_df=df)
-    except Exception as e:
-        print(e)
+    for event, func_name in EVENTS_L2:
+        try:
+            # Dynamically call the appropriate function
+            if func_name == "get_data_steady_event":
+                df = get_data_steady_event(event=event, database="dsbl2")
+            else:
+                df = get_data_current_event(event=event, database="dsbl2")
+            
+            st.session_state[f"data_L2_{event}"] = sort_results(result_df=df)
+        except Exception as e:
+            print(e)
 
 
-def calculate_place_flow(result_df: pd.DataFrame) -> pd.DataFrame:
+def calculate_place_flow(result_df: pd.DataFrame, liga:int) -> pd.DataFrame:
+    if liga == 1:
+        teams = TEAMS_L1
+
+    elif liga == 2:
+        teams = TEAMS_L2
+
     df_sorted_index = pd.DataFrame()
 
     for i, name in enumerate(race_columns):
@@ -114,10 +102,10 @@ def calculate_place_flow(result_df: pd.DataFrame) -> pd.DataFrame:
 
         df_sorted_index[name] = indices
 
-    result_df_ = pd.DataFrame(index=range(len(TEAMS)), columns=race_columns)
-    result_df_.index = TEAMS
+    result_df_ = pd.DataFrame(index=range(len(teams)), columns=race_columns)
+    result_df_.index = teams
 
-    for club in TEAMS:
+    for club in teams:
         res = []
         for col in df_sorted_index.columns:
                         
@@ -161,6 +149,96 @@ def create_flow_plot(result_df_: pd.DataFrame):
     return fig
 
 
+def highlight_fleet(_, team_in_fleet: list[bool], color: str):
+    return ["color:" + color if team else "" for team in team_in_fleet]
+    # return ["background-color:" + color if team else "" for team in team_in_fleet]
+
+
+def add_pairinglist_font(df: pd.DataFrame, event: int, liga: int) -> pd.DataFrame:
+    pairing_list, _ = create_pairing_list(event=event - 1, liga=liga)
+    pairing_list = pairing_list.drop(["flight", "Race"], axis=1)
+
+    pairing_list = pairing_list.replace("BYC(BA)", "BYC (BA)")
+    pairing_list = pairing_list.replace("BYC(BE)", "BYC (BE)")
+
+    pairing_list = pairing_list.replace("KYC(SH)", "KYC (SH)")
+    pairing_list = pairing_list.replace("KYC(BW)", "KYC (BW)")
+    
+    teams = df["Teams"].values
+
+    flight = 1
+
+    df.replace("", "___", inplace=True)
+    style_df = df.style
+
+    colors = ["red", "blue", "lightgreen"]
+    # colors = ["#dca0b6", "#ADD8E6", "#90EE90"]
+
+    for i in range(pairing_list.shape[0]):
+        team_in_fleet = np.isin(teams, pairing_list.iloc[i, :].values)
+        
+        column_name = 'Flight ' + str(flight)
+        
+        color = colors[i % len(colors)]
+        
+        style_df = style_df.apply(highlight_fleet, subset=[column_name], team_in_fleet=team_in_fleet, color=color)#.map(lambda x: 'font-weight: bold')
+                            #.set_properties(**{"font-weight": "bold"})
+
+        if (i + 1) % 3 == 0:
+            flight += 1
+    
+    return style_df
+
+
+def display_event(title: str, data_event: str, liga: int) -> None:
+    st.write("### Ergebnisse " + title)
+
+    data = st.session_state[data_event].astype(str)
+
+    # print(data)
+
+    data = data.replace("nan","0")
+
+    # Replace 0 with "" in columns that only contain 0
+    data_to_show = data.copy()
+
+    # data_to_show["SCP"] = data_to_show["SCP"].astype(float).astype(int).astype(str)
+    
+    for column in race_columns:
+        try:
+            if data_to_show[column].astype(float).sum() == 0:
+               data_to_show[column] = data_to_show[column].str.replace("0", "")  
+        except:
+            pass
+
+    data_to_show.insert(0, 'Rank', range(1, data_to_show.shape[0] + 1))
+
+    if DISPLAY_COLORCODING:
+        st.dataframe(
+            add_pairinglist_font(
+                df=data_to_show,event=int(data_event[-1]),
+                liga=liga
+            ),
+            height=665,
+            use_container_width=True,
+            hide_index=True
+        )
+    else:
+        st.dataframe(
+            data_to_show,
+            height=665,
+            use_container_width=True,
+            hide_index=True
+        )
+
+    df_ = calculate_place_flow(result_df=data, liga=liga)
+
+    plot_flow = create_flow_plot(df_)
+
+    st.write("### Flow")
+    st.plotly_chart(plot_flow)
+
+
 def highlight_medals(val):
     if val == 1:
         color = 'rgba(255, 215, 0, 0.7)'  # Gold with transparency
@@ -191,11 +269,19 @@ def grey_last_rows(df):
     return df_copy
 
 
-def compute_overall(events: int) -> None:
-    overall_results = pd.DataFrame({'Teams': TEAMS})
+def compute_overall(events: int, liga: int) -> None:
+    if liga == 1:
+        teams = TEAMS_L1
+        session_name = "data_L1_event_0"
+
+    elif liga == 2:
+        teams = TEAMS_L2
+        session_name = "data_L2_event_0"
+
+    overall_results = pd.DataFrame({'Teams': teams})
 
     for event in range(1, events+1):
-        result_df = st.session_state["data_event_0" + str(event)]
+        result_df = st.session_state[session_name + str(event)]
 
         if result_df["Total"].min() == 0:
             overall_results['Event {}'.format(event)] = 0
@@ -224,115 +310,34 @@ def compute_overall(events: int) -> None:
     overall_results = overall_results.apply(
         grey_last_rows, axis=None
     )
-    
-    st.write("### Saison 2024 Ergebnis") 
-    col_0, col_1 = st.columns([1,1])
 
-    with col_0:
-        st.write("### 1. Liga") 
+    return overall_results
+
+
+def display_overall() -> None:
+    L1_saison = compute_overall(events=len(EVENTS_L1), liga=1) 
+
+    L2_saison = compute_overall(events=len(EVENTS_L2), liga=2)
+
+    print("[INFO] Overall results computed.") 
+
+    _, col_L1, _, col_L2, _ = st.columns([1, 4, 1, 4, 1])
+
+    with col_L1:
+        st.write("### 1. Liga")
         st.dataframe(
-            overall_results,
-            height=665,
-            use_container_width=True,
-            hide_index=True,
-        )
-
-    with col_1:
-        st.write("### 2. Liga") 
-        st.dataframe(
-            overall_results,
-            height=665,
-            use_container_width=True,
-            hide_index=True,
-        )
-
-
-def highlight_fleet(_, team_in_fleet: list[bool], color: str):
-    return ["color:" + color if team else "" for team in team_in_fleet]
-    # return ["background-color:" + color if team else "" for team in team_in_fleet]
-
-
-def add_pairinglist_font(df: pd.DataFrame, event: int) -> pd.DataFrame:
-    if event == 6:
-        return df
-    
-    else:
-        pairing_list, _ = create_pairing_list(event=event - 1)
-        pairing_list = pairing_list.drop(["flight", "Race"], axis=1)
-
-        pairing_list = pairing_list.replace("BYC(BA)", "BYC (BA)")
-        pairing_list = pairing_list.replace("BYC(BE)", "BYC (BE)")
-
-        pairing_list = pairing_list.replace("KYC(SH)", "KYC (SH)")
-        pairing_list = pairing_list.replace("KYC(BW)", "KYC (BW)")
-        
-        teams = df["Teams"].values
-
-        flight = 1
-
-        df.replace("", "___", inplace=True)
-        style_df = df.style
-
-        colors = ["red", "blue", "lightgreen"]
-        # colors = ["#dca0b6", "#ADD8E6", "#90EE90"]
-
-        for i in range(pairing_list.shape[0]):
-            team_in_fleet = np.isin(teams, pairing_list.iloc[i, :].values)
-            
-            column_name = 'Flight ' + str(flight)
-            
-            color = colors[i % len(colors)]
-            
-            style_df = style_df.apply(highlight_fleet, subset=[column_name], team_in_fleet=team_in_fleet, color=color)#.map(lambda x: 'font-weight: bold')
-                               #.set_properties(**{"font-weight": "bold"})
-
-            if (i + 1) % 3 == 0:
-                flight += 1
-        
-        return style_df
-
-
-def display_event(title: str, data_event: str) -> None:
-    st.write("### Ergebnisse " + title)
-
-    data = st.session_state[data_event].astype(str)
-
-    # print(data)
-
-    data = data.replace("nan","0")
-
-    # Replace 0 with "" in columns that only contain 0
-    data_to_show = data.copy()
-
-    # data_to_show["SCP"] = data_to_show["SCP"].astype(float).astype(int).astype(str)
-    
-    for column in race_columns:
-        try:
-            if data_to_show[column].astype(float).sum() == 0:
-               data_to_show[column] = data_to_show[column].str.replace("0", "")  
-        except:
-            pass
-
-    data_to_show.insert(0, 'Rank', range(1, data_to_show.shape[0] + 1))
-
-    if DISPLAY_COLORCODING:
-        st.dataframe(
-            add_pairinglist_font(df=data_to_show,event=int(data_event[-1])),
-            height=665,
-            use_container_width=True,
-            hide_index=True
-        )
-    else:
-        st.dataframe(
-            data_to_show,
+            L1_saison,
             height=665,
             use_container_width=True,
             hide_index=True
         )
 
-    df_ = calculate_place_flow(data)
-
-    plot_flow = create_flow_plot(df_)
-
-    st.write("### Flow")
-    st.plotly_chart(plot_flow)
+    with col_L2:
+        st.write("### 2. Liga")
+        st.dataframe(
+            L2_saison,
+            height=665,
+            use_container_width=True,
+            hide_index=True,
+            
+        )

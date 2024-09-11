@@ -6,7 +6,7 @@ from config import *
 
 pd.set_option("future.no_silent_downcasting", True)
 
-from src.utils_app import initialize_states, display_event, compute_overall, setup_page
+from src.utils_app import initialize_states, display_event, display_overall, setup_page
 
 setup_page()
 
@@ -19,51 +19,90 @@ with col1:
 with col2:
     st.image("./data/logo_myc.png")
 
-tab_event1, tab_event2, tab_event3, \
-tab_event4, tab_event5, tab_event6, tab_overall = st.tabs(
-    ["Event 1", "Event 2", "Event 3", "Event 4", "Event 5", "Event 6", "Saison 2024"]
+tab_L1_event1, tab_L1_event2, tab_L1_event3, tab_L1_event4, tab_L1_event5, tab_L1_event6, \
+tab_L2_event1, tab_L2_event2, tab_L2_event3, tab_L2_event4, tab_L2_event5, \
+tab_overall = st.tabs(
+    [
+        "L1 Event 1", "L1 Event 2", "L1 Event 3", "L1 Event 4", "L1 Event 5", "L1 Event 6",
+        "L2 Event 1", "L2 Event 2", "L2 Event 3", "L2 Event 4", "L2 Event 5",
+        "Saison 2024"
+    ]
 )
 
-with tab_event1:
-
+with tab_L1_event1:
     display_event(
         title="Event 01 Wannsee",
-        data_event="data_event_01"
+        data_event="data_L1_event_01",
+        liga=1
     )
-
-with tab_event2:
+with tab_L1_event2:
     display_event(
         title="Event 02 Warnemünde",
-        data_event="data_event_02"
+        data_event="data_L1_event_02",
+        liga=1
     )
-
-with tab_event3:
+with tab_L1_event3:
     display_event(
         title="Event 03 Kiel - KYC",
-        data_event="data_event_03"
+        data_event="data_L1_event_03",
+        liga=1
     )
-
-with tab_event4:
+with tab_L1_event4:
     display_event(
         title="Event 04 Kiel",
-        data_event="data_event_04"
+        data_event="data_L1_event_04",
+        liga=1
     )
-
-with tab_event5:
+with tab_L1_event5:
     display_event(
         title="Event 05 Starnberg - MYC",
-        data_event="data_event_05"
+        data_event="data_L1_event_05",
+        liga=1
     )
-
-with tab_event6:
+with tab_L1_event6:
     display_event(
         title="Event 06 Starnberg - BYC",
-        data_event="data_event_06"
+        data_event="data_L1_event_06",
+        liga=1
     )
 
-with tab_overall:
-    compute_overall(events=EVENTS1) # FIXME: braucht EVENTS2 für 2. Liga
 
-print("[INFO] Rerun")
-time.sleep(REFRESH_TIME)
-st.rerun()
+with tab_L2_event1:
+    display_event(
+        title="Event 01 Wannsee",
+        data_event="data_L2_event_01",
+        liga=2
+    )
+with tab_L2_event2:
+    display_event(
+        title="Event 02 Warnemünde",
+        data_event="data_L2_event_02",
+        liga=2
+    ) 
+with tab_L2_event3:
+    display_event(
+        title="Event 03 Kiel",
+        data_event="data_L2_event_03",
+        liga=2
+    )
+with tab_L2_event4:
+    display_event(
+        title="Event 04 Starnberg - MYC",
+        data_event="data_L2_event_04",
+        liga=2
+    )
+with tab_L2_event5:
+    display_event(
+        title="Event 05 Starnberg - BYC",
+        data_event="data_L2_event_05",
+        liga=2
+    )
+
+
+
+with tab_overall:
+    display_overall()
+
+# print("[INFO] Rerun")
+# time.sleep(REFRESH_TIME)
+# st.rerun()
