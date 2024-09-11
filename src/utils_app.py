@@ -4,7 +4,13 @@ import streamlit as st
 import plotly.graph_objects as go
 
 from src.utils_sorting import sort_results, create_pairing_list
-from src.utils_data import get_data_current_event, get_data_steady_event 
+from src.utils_data import get_data_current_event, get_data_steady_event
+
+from data.data_pairing_list import data as DATA_PAIRING_LIST
+from data.data_pairing_list import TEAMS as TEAMS
+
+from data.data_pairing_list2 import data as DATA_PAIRING_LIST2
+from data.data_pairing_list2 import TEAMS as TEAMS2
 
 # Load confing
 from config import *
@@ -185,10 +191,10 @@ def grey_last_rows(df):
     return df_copy
 
 
-def compute_overall():
+def compute_overall(events: int) -> None:
     overall_results = pd.DataFrame({'Teams': TEAMS})
 
-    for event in range(1, EVENTS+1):
+    for event in range(1, events+1):
         result_df = st.session_state["data_event_0" + str(event)]
 
         if result_df["Total"].min() == 0:
@@ -200,9 +206,9 @@ def compute_overall():
             result_df.sort_values(by='Teams', inplace=True)
             overall_results['Event {}'.format(event)] = result_df['Rank'].values
     
-    sum_columns = ['Event {}'.format(event) for event in range(1, EVENTS + 1)]
+    sum_columns = ['Event {}'.format(event) for event in range(1, events + 1)]
     overall_results['Total'] = overall_results[sum_columns].sum(axis=1)
-    overall_results.sort_values(by=['Total','Event {}'.format(EVENTS)], inplace=True)
+    overall_results.sort_values(by=['Total','Event {}'.format(events)], inplace=True)
     try:
         overall_results.drop(columns=['Rank'], inplace=True)
     except KeyError:

@@ -1,10 +1,12 @@
 import numpy as np
 
+import data.data_pairing_list
+import data.data_pairing_list2
+
 BOATS = 6
 FLIGHTS = 16
-EVENTS = 6
-TEAMS = ['ASVW', 'BYC (BA)', 'BYC (BE)', 'BYCÜ', 'DYC', 'FSC', 'JSC', 'KYC (BW)', 'KYC (SH)', 'MSC', 'MYC', 'NRV', 'RSN',
-         'SMCÜ', 'SV03', 'SVI', 'VSaW', 'WYC']
+EVENTS1 = len(data.data_pairing_list.data)
+EVENTS2 = len(data.data_pairing_list2.data)
 
 BUCHSTABEN = {'OCS': BOATS + 1,
               'DSQ': BOATS + 1,

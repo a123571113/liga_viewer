@@ -2,6 +2,11 @@ import numpy as np
 import pandas as pd
 
 from data.data_pairing_list import data as DATA_PAIRING_LIST
+from data.data_pairing_list import TEAMS as TEAMS
+
+from data.data_pairing_list2 import data as DATA_PAIRING_LIST2
+from data.data_pairing_list2 import TEAMS as TEAMS2
+
 from config import *
 
 
@@ -47,21 +52,19 @@ def count_values(row):
     return pd.Series(counts)
 
 
-# TODO Add Multiple RDGs
-def check_for_rdg(df: pd.DataFrame) -> pd.DataFrame:
-    value = "RDG"
-
-    rows, cols = (df == value).to_numpy().nonzero()
+def replace_rdg(result_df, value="RDG", mode="all"):
+    rows, cols = (result_df == value).to_numpy().nonzero()
 
     for row, col in zip(rows, cols):
+        result_df_copy = result_df.copy()
+        result_df_copy["SCP"] = np.nan
+        result_df_copy["_id"] = np.nan
+        result_df_copy["Total"] = np.nan
+        row_values = result_df_copy.iloc[row, :].apply(pd.to_numeric, errors='coerce')
+        mean_value = row_values[row_values.notna()].mean()
+        result_df.iloc[row, col] = round(mean_value, 1)
 
-        left_side_values = df.iloc[row, :col]
-        
-        mean_value = left_side_values.apply(pd.to_numeric, errors='coerce').mean()
-    
-        df.iloc[row, col] = round(mean_value, 1)
-
-    return df
+    return result_df
 
 
 def sort_results(result_df, prints=False):
@@ -69,7 +72,7 @@ def sort_results(result_df, prints=False):
 
     result_df_copy.replace(BUCHSTABEN, inplace=True)
     result_df_copy.replace('-', np.nan, inplace=True)
-    result_df_copy = check_for_rdg(df=result_df_copy)
+    result_df_copy = replace_rdg(result_df_copy)
 
     columns_to_sum = ['SCP']
     columns_to_sum.extend([f'Flight {i}' for i in range(1, FLIGHTS + 1)])

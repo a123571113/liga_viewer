@@ -1,3 +1,6 @@
+TEAMS = ['ASVW', 'BYC (BA)', 'BYC (BE)', 'BYCÜ', 'DYC', 'FSC', 'JSC', 'KYC (BW)', 'KYC (SH)', 'MSC', 'MYC', 'NRV', 'RSN',
+         'SMCÜ', 'SV03', 'SVI', 'VSaW', 'WYC']
+
 data = [
         # 1 Berlin
         """Flight Race Boat 1 Boat 2 Boat 3 Boat 4 Boat 5 Boat 6
