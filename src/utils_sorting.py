@@ -2,6 +2,11 @@ import numpy as np
 import pandas as pd
 
 from data.data_pairing_list import data as DATA_PAIRING_LIST
+from data.data_pairing_list import TEAMS as TEAMS
+
+from data.data_pairing_list2 import data as DATA_PAIRING_LIST2
+from data.data_pairing_list2 import TEAMS as TEAMS2
+
 from config import *
 
 
