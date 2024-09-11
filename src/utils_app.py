@@ -191,10 +191,10 @@ def grey_last_rows(df):
     return df_copy
 
 
-def compute_overall():
+def compute_overall(events: int) -> None:
     overall_results = pd.DataFrame({'Teams': TEAMS})
 
-    for event in range(1, EVENTS1+1): #FIXME: EVENTS1 1.Liga oder EVENTS2 2.Liga
+    for event in range(1, events+1):
         result_df = st.session_state["data_event_0" + str(event)]
 
         if result_df["Total"].min() == 0:
@@ -206,9 +206,9 @@ def compute_overall():
             result_df.sort_values(by='Teams', inplace=True)
             overall_results['Event {}'.format(event)] = result_df['Rank'].values
     
-    sum_columns = ['Event {}'.format(event) for event in range(1, EVENTS1 + 1)] #FIXME: EVENTS1 1.Liga oder EVENTS2 2.Liga
+    sum_columns = ['Event {}'.format(event) for event in range(1, events + 1)]
     overall_results['Total'] = overall_results[sum_columns].sum(axis=1)
-    overall_results.sort_values(by=['Total','Event {}'.format(EVENTS1)], inplace=True) #FIXME: EVENTS1 1.Liga oder EVENTS2 2.Liga
+    overall_results.sort_values(by=['Total','Event {}'.format(events)], inplace=True)
     try:
         overall_results.drop(columns=['Rank'], inplace=True)
     except KeyError:

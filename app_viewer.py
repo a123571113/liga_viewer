@@ -62,7 +62,7 @@ with tab_event6:
     )
 
 with tab_overall:
-    compute_overall()
+    compute_overall(events=EVENTS1)
 
 print("[INFO] Rerun")
 time.sleep(REFRESH_TIME)
