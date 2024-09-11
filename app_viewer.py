@@ -6,54 +6,9 @@ from config import *
 
 pd.set_option("future.no_silent_downcasting", True)
 
-from src.utils_app import initialize_states, display_event, compute_overall
+from src.utils_app import initialize_states, display_event, compute_overall, setup_page
 
-st.set_page_config(layout="wide")
-
-hide_streamlit_style = """
-                <style>
-                div[data-testid="stToolbar"] {
-                visibility: hidden;
-                height: 0%;
-                position: fixed;
-                }
-                div[data-testid="stDecoration"] {
-                visibility: hidden;
-                height: 0%;
-                position: fixed;
-                }
-                div[data-testid="stStatusWidget"] {
-                visibility: hidden;
-                height: 0%;
-                position: fixed;
-                }
-                #MainMenu {
-                visibility: hidden;
-                height: 0%;
-                }
-                header {
-                visibility: hidden;
-                height: 0%;
-                }
-                footer {
-                visibility: hidden;
-                height: 0%;
-                }
-                .custom-footer {
-                position: fixed;
-                bottom: 0.0;
-                width: 100%;
-                text-align: center;
-                font-size: 12px;
-                color: gray;
-                }
-                </style>
-                <div class="custom-footer">
-                Developed with ❤️ by Hans & Hans
-                </div>
-                """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
+setup_page()
 
 initialize_states()
 col1, col2 = st.columns([9, 1], vertical_alignment="center")

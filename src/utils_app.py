@@ -9,6 +9,53 @@ from src.utils_data import get_data_current_event, get_data_steady_event
 # Load confing
 from config import *
 
+def setup_page() -> None:
+    st.set_page_config(layout="wide")
+
+    hide_streamlit_style = """
+                    <style>
+                    div[data-testid="stToolbar"] {
+                    visibility: hidden;
+                    height: 0%;
+                    position: fixed;
+                    }
+                    div[data-testid="stDecoration"] {
+                    visibility: hidden;
+                    height: 0%;
+                    position: fixed;
+                    }
+                    div[data-testid="stStatusWidget"] {
+                    visibility: hidden;
+                    height: 0%;
+                    position: fixed;
+                    }
+                    #MainMenu {
+                    visibility: hidden;
+                    height: 0%;
+                    }
+                    header {
+                    visibility: hidden;
+                    height: 0%;
+                    }
+                    footer {
+                    visibility: hidden;
+                    height: 0%;
+                    }
+                    .custom-footer {
+                    position: fixed;
+                    bottom: 0.0;
+                    width: 100%;
+                    text-align: center;
+                    font-size: 12px;
+                    color: gray;
+                    }
+                    </style>
+                    <div class="custom-footer">
+                    Developed with ❤️ by Hans & Hans.
+                    </div>
+                    """
+    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 
 def initialize_states() -> None:
    
