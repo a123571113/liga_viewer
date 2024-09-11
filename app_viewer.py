@@ -62,7 +62,7 @@ with tab_event6:
     )
 
 with tab_overall:
-    compute_overall(events=EVENTS1)
+    compute_overall(events=EVENTS1) # FIXME: braucht EVENTS2 für 2. Liga
 
 print("[INFO] Rerun")
 time.sleep(REFRESH_TIME)
