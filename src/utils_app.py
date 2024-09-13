@@ -211,6 +211,9 @@ def display_event(title: str, data_event: str, liga: int) -> None:
         except:
             pass
 
+    for column in race_columns:
+        data_to_show[column] = data_to_show[column].str.replace(".0", "")
+
     data_to_show.insert(0, 'Rank', range(1, data_to_show.shape[0] + 1))
 
     if DISPLAY_COLORCODING:
