@@ -171,7 +171,7 @@ def add_pairinglist_font(df: pd.DataFrame, event: int, liga: int) -> pd.DataFram
     df.replace("", "___", inplace=True)
     style_df = df.style
 
-    colors = ["red", "blue", "lightgreen"]
+    colors = ["red", "blue", "#109010"]
     # colors = ["#dca0b6", "#ADD8E6", "#90EE90"]
 
     for i in range(pairing_list.shape[0]):
