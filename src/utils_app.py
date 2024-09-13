@@ -51,7 +51,7 @@ def setup_page() -> None:
                     }
                     </style>
                     <div class="custom-footer">
-                    Developed with ❤️ by Hans & Hans.
+                    Developed with ❤️ by Hans & Hans. Copyright 2024 Anton Sattler, Julius Neszvecsko.
                     </div>
                     """
     st.markdown(hide_streamlit_style, unsafe_allow_html=True)
