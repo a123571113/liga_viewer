@@ -34,14 +34,14 @@ EVENTS_L1 = [
     ("event_02", "get_data_steady_event"),
     ("event_03", "get_data_steady_event"),
     ("event_04", "get_data_steady_event"),
-    ("event_05", "get_data_current_event"),
-    ("event_06", "get_data_steady_event")
+    ("event_05", "get_data_steady_event"),
+    ("event_06", "get_data_current_event")
 ]
 
 EVENTS_L2 = [
     ("event_01", "get_data_steady_event"),
     ("event_02", "get_data_steady_event"),
     ("event_03", "get_data_steady_event"),
-    ("event_04", "get_data_current_event"),  
-    ("event_05", "get_data_steady_event")
+    ("event_04", "get_data_steady_event"),  
+    ("event_05", "get_data_current_event")
 ]
