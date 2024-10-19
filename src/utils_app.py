@@ -280,6 +280,7 @@ def compute_overall(events: int, liga: int) -> None:
     elif liga == 2:
         teams = TEAMS_L2
         session_name = "data_L2_event_0"
+        events = 4
 
     overall_results = pd.DataFrame({'Teams': teams})
 
