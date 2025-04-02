@@ -280,25 +280,36 @@ def compute_overall(events: int, liga: int) -> None:
     elif liga == 2:
         teams = TEAMS_L2
         session_name = "data_L2_event_0"
-        events = 4
+        # events = 4
 
     overall_results = pd.DataFrame({'Teams': teams})
-
+    valid_events = []
     for event in range(1, events+1):
         result_df = st.session_state[session_name + str(event)]
 
+        # get only valid events with enough flights completed
+        # TODO: maybe fix, such that this is only applied after event is finished,
+        #  e.g. eventw with 3 flights is included on a friday but not on sunday afternoon
+        if result_df.dropna(inplace=False, axis=1, how='any',).shape[1] > 7:
+            valid_events.append(event)
+        else:
+            # ignore event
+            continue
+
         if result_df["Total"].min() == 0:
             overall_results['Event {}'.format(event)] = 0
-        
         else:
-
             result_df.insert(0, 'Rank', range(1, result_df.shape[0] + 1))
             result_df.sort_values(by='Teams', inplace=True)
             overall_results['Event {}'.format(event)] = result_df['Rank'].values
-    
-    sum_columns = ['Event {}'.format(event) for event in range(1, events + 1)]
+
+    # if no event is valid, just return the teams
+    if len(valid_events) == 0:
+        return overall_results
+
+    sum_columns = ['Event {}'.format(event) for event in valid_events]
     overall_results['Total'] = overall_results[sum_columns].sum(axis=1)
-    overall_results.sort_values(by=['Total','Event {}'.format(events)], inplace=True)
+    overall_results.sort_values(by=['Total','Event {}'.format(max(valid_events))], inplace=True)
     try:
         overall_results.drop(columns=['Rank'], inplace=True)
     except KeyError:
